@@ -50,6 +50,10 @@ public interface UsersMapper {
      */
     public List<Users> getAllUserByUid(String userId);
 
+
+    /*根据userCode获取user*/
+    Users getUserByUserCode(String userCode);
+
     int countByExample(UsersExample example);
 
     int deleteByExample(UsersExample example);

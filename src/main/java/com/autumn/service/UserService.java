@@ -54,4 +54,14 @@ public class UserService {
         return users;
     }
 
+    /**
+     * 根据userCode获取user
+     * @param userCode
+     * @return
+     */
+    public Users getUserByUserCode(String userCode){
+        Users user=usersMapper.getUserByUserCode(userCode);
+        return user;
+    }
+
 }

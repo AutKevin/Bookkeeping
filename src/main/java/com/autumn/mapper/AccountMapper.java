@@ -1,11 +1,9 @@
 package com.autumn.mapper;
 
-import com.autumn.pojo.Account;
-import com.autumn.pojo.AccountExample;
+import com.autumn.pojo.*;
+
 import java.util.List;
 
-import com.autumn.pojo.AccountExt;
-import com.autumn.pojo.Pie;
 import org.apache.ibatis.annotations.Param;
 
 public interface AccountMapper {

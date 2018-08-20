@@ -4,6 +4,7 @@ import com.autumn.pojo.*;
 import com.autumn.redis.RedisTool;
 import com.autumn.service.BookService;
 import com.autumn.service.GetHttpInfoService_NoDubbo;
+import com.autumn.service.UserService;
 import com.autumn.serviceinf.GetHttpInfoServiceInf;
 import com.autumn.tools.AppEnum;
 import com.autumn.tools.DateTool;
@@ -30,6 +31,9 @@ public class GetHttpInfoController {
 
     @Autowired
     public BookService bookService;
+
+    @Autowired
+    public UserService userService;
 
     @Autowired
     RedisTool redisTool;
@@ -70,7 +74,7 @@ public class GetHttpInfoController {
                 Pattern  pattern= Pattern.compile("([1-9]\\d*\\.?\\d*)|(0\\.\\d*[1-9])");
                 Matcher ma=pattern.matcher(msgPojo.getContext());
                 while(ma.find()){
-                    boolean result = addBook(Double.parseDouble(ma.group()));
+                    boolean result = addBook(Double.parseDouble(ma.group()),msgPojo.getUserName());
                     FileTool.writeToFile(zfbPath,"消费一笔"+ma.group()+"金额,记账"+result+"");
                 }
             }
@@ -90,9 +94,10 @@ public class GetHttpInfoController {
      * @param money
      * @return
      */
-    public boolean addBook(double money){
+    public boolean addBook(double money,String userCode){
+        Users user = userService.getUserByUserCode(userCode);
         Account account = new Account();
-        account.setUserId("qyid1");    //默认为管理员
+        account.setUserId(user.getId());
         account.setCateCode("weizhi");   //类型未知
         account.setTime(DateTool.getToday());   //默认今天
         account.setMoney((int) (money*100));

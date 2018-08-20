@@ -22,7 +22,9 @@
     where u.id = #{uid}  or parentCode = '0' order by sm.sortNumber
   </select>
 
-
+  <select id="getUserByUserCode"  resultType="com.autumn.pojo.Users">
+    select * from users where userCode =  #{userCode}
+  </select>
 
   <sql id="Base_Column_List" >
     id, userCode, pwd, name, sex, birthday, group_code
