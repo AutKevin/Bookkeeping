@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.autumn.mapper.GetHttpInfoMapper" >
+
+    <!--添加-->
+    <insert id="insertGPS" parameterType="com.autumn.pojo.UserPosition" >
+        insert into user_position (id,userId,userFlag,lontitude,latitude,time,addr,locationdescribe)
+        values (#{id}, #{userId}, #{userFlag}, #{lontitude}, #{latitude}, #{time},#{addr},#{locationdescribe});
+    </insert>
+
+    <!--获取最新位置-->
+    <select id="getGPSForWeb" resultType="com.autumn.pojo.UserPosition" parameterType="java.lang.String" >
+        select * from user_position as t
+        where t.id in
+        (select SUBSTRING_INDEX(group_concat(id order by `time` desc),',',1) from user_position
+         where userId in (select id from users where group_code=(select group_code from users where id = #{userId}))
+         group by userId)
+    </select>
+
+    <!--获取一天内的移动轨迹-->
+    <select id="getRout" resultType="com.autumn.pojo.UserPosition">
+        select * from user_position where userId = #{userId} and time like '%${time}%' order by time
+    </select>
+</mapper>

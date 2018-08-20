@@ -1,0 +1,429 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.autumn.mapper.AccountMapper" >
+  <resultMap id="BaseResultMap" type="com.autumn.pojo.Account" >
+    <id column="id" property="id" jdbcType="VARCHAR" />
+    <result column="cateCode" property="cateCode" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="VARCHAR" />
+    <result column="money" property="money" jdbcType="INTEGER" />
+    <result column="remark" property="remark" jdbcType="VARCHAR" />
+  </resultMap>
+
+
+  <sql id="getAllBooksql" >
+    acc.id, acc.cateCode, cate_name, user_id,u.name as user_name, money, remark, time
+  </sql>
+  <!--获取所有账单条数-->
+  <select id="getAllBookCount" resultType="java.lang.Integer" >
+    select
+    count(*)
+    from account as acc
+    left join users as u on u.id = acc.user_id
+    left join conCategory as cate on cate.cate_code = acc.cateCode
+    <where>
+      <if test="userId!=null and userId!=''">
+        acc.user_id = #{userId}
+      </if>
+      <if test="cateCode_search!=null and cateCode_search!=''">
+       and acc.cateCode = #{cateCode_search}
+      </if>
+      <if test="money_search_start != null and money_search_start != '' and money_search_start != '0'.toString() and money_search_start != '0.00'.toString()">
+        and acc.money <![CDATA[ >= ]]> #{money_search_start}
+      </if>
+      <if test='money_search_end != null and money_search_end != "" and money_search_end != "0" and money_search_end != "0.00" '>
+        and acc.money <![CDATA[ <= ]]> #{money_search_end}
+      </if>
+      <if test="time_search_start!=null and time_search_start!=''">
+        and acc.time <![CDATA[ >= ]]> #{time_search_start}
+      </if>
+      <if test="time_search_end!=null and time_search_end!=''">
+        and acc.time <![CDATA[ <= ]]> #{time_search_end}
+      </if>
+      <if test="remark_search!=null and remark_search!=''">
+        and acc.remark like '%${remark_search}%'
+      </if>
+    </where>
+    order by acc.time desc
+  </select>
+
+  <select id="getAllBookByPage" resultType="com.autumn.pojo.AccountExt" >
+    select
+    <include refid="getAllBooksql" />
+    from account as acc
+    left join users as u on u.id = acc.user_id
+    left join conCategory as cate on cate.cate_code = acc.cateCode
+    <where>
+      <if test="userId!=null and userId!=''">
+        acc.user_id = #{userId}
+      </if>
+      <if test="cateCode_search!=null and cateCode_search!=''">
+        and acc.cateCode = #{cateCode_search}
+      </if>
+      <if test="money_search_start != null and money_search_start != '' and money_search_start != '0'.toString() and money_search_start != '0.00'.toString()">
+        and acc.money <![CDATA[ >= ]]> #{money_search_start}
+      </if>
+      <if test='money_search_end != null and money_search_end != "" and money_search_end != "0" and money_search_end != "0.00" '>
+        and acc.money <![CDATA[ <= ]]> #{money_search_end}
+      </if>
+      <if test="time_search_start!=null and time_search_start!=''">
+        and acc.time <![CDATA[ >= ]]> #{time_search_start}
+      </if>
+      <if test="time_search_end!=null and time_search_end!=''">
+        and acc.time <![CDATA[ <= ]]> #{time_search_end}
+      </if>
+      <if test="remark_search!=null and remark_search!=''">
+        and acc.remark like '%${remark_search}%'
+      </if>
+    </where>
+    order by acc.time desc
+  </select>
+
+  <!--添加-->
+  <insert id="insert" parameterType="com.autumn.pojo.Account" >
+    insert into account (id, cateCode, user_id,
+    money, remark,`time`)
+    values (#{id,jdbcType=VARCHAR}, #{cateCode,jdbcType=VARCHAR}, #{userId,jdbcType=VARCHAR},
+    #{money,jdbcType=INTEGER}, #{remark,jdbcType=VARCHAR},#{time})
+  </insert>
+  <!--修改-->
+  <update id="editBook" parameterType="com.autumn.pojo.Account">
+    update account
+    <set>
+      <if test="cateCode != null and cateCode != ''" >
+        cateCode = #{cateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null and userId != ''" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null and money != ''" >
+        money = #{money,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null and remark != ''" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+      <if test="time != null and time != ''" >
+        time = #{time}
+      </if>
+    </set>
+    where id = #{id}
+  </update>
+  <!--删除-->
+  <delete id="deleteByID" parameterType="java.lang.String" >
+    delete from account
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+
+<!--根据id查询详情-->
+<select id="getBookById" resultType="com.autumn.pojo.AccountExt" parameterType="java.lang.String" >
+    select
+    <include refid="getAllBooksql" />
+    from account as acc
+    left join users as u on u.id = acc.user_id
+    left join conCategory as cate on cate.cate_code = acc.cateCode
+    where acc.id = #{id}
+</select>
+
+  <!--获取当月总金额-->
+  <select id="getCountMoney" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select IFNULL(sum(money),0) from account where user_id = #{user_id} and DATE_FORMAT( time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+  </select>
+
+  <!--获取上月总金额-->
+  <select id="getPreCountMoney" parameterType="java.lang.String" resultType="java.lang.Integer">
+    select IFNULL(sum(money),0) from account where user_id = #{user_id} and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format( time, '%Y%m' ) ) =1
+  </select>
+
+  <!--获取已经使用的种类,报表用-->
+  <select id="getUsedCate" parameterType="java.lang.String" resultType="java.lang.String">
+     select distinct(cate.cate_name) from account as acc left join conCategory as cate on acc.cateCode=cate.cate_code
+     where time like '${time}%' and acc.user_id= #{userId}
+  </select>
+
+  <!--消费类型饼状图-->
+  <select id="getCatePie" parameterType="java.lang.String" resultType="com.autumn.pojo.Pie">
+    select cate.cate_name as name, truncate(sum(acc.money)/100,2) as value from account as acc left join conCategory as cate on acc.cateCode=cate.cate_code
+    where time like '${time}%' and acc.user_id= #{userId}
+    group by cate_name
+  </select>
+
+  <!--根据月份获得当月所有日期-->
+  <select id="getAllDayByMonth" parameterType="java.lang.String" resultType="java.lang.String">
+    select distinct(time) from account where time like  '${time}%' and user_id= #{userId} order by time asc
+  </select>
+
+  <!--以天为单位获取当月日消费金额-->
+  <select id="getDayMoneyByMonth" parameterType="java.lang.String" resultType="java.lang.String">
+    select TRUNCATE(sum(money)/100,2) from account where time like '${time}%' and user_id= #{userId} group by time order by time asc
+  </select>
+
+  <!--根据年份所有月份-->
+  <select id="getAllMonth_Year" parameterType="java.lang.String" resultType="java.lang.String">
+    select DISTINCT(LEFT(time,7)) as time from account where time like '${time}%' and user_id= #{userId} order by LEFT(time,7) asc
+  </select>
+
+  <!--根据年份获取所有月份金额-->
+  <select id="getAllMonthMoney_Year" parameterType="java.lang.String" resultType="java.lang.String">
+    select TRUNCATE(sum(money)/100,2)
+    from account
+    where time like '${time}%' and user_id= #{userId}
+    group by LEFT(time,7) order by LEFT(time,7) asc
+  </select>
+<!-- ************************全部成员消费报表************************ -->
+  <!--获取已经使用的种类,报表用-->
+  <select id="getUsedCate_group" parameterType="java.lang.String" resultType="java.lang.String">
+    select distinct(cate.cate_name)
+    from account as acc
+    left join conCategory as cate on acc.cateCode=cate.cate_code
+    left join users as u on acc.user_id=u.id
+    where time like '${time}%'
+    and acc.user_id in (select id from users where group_code=(select group_code from users where id = #{userId}))
+  </select>
+
+  <!--消费类型饼状图-->
+  <select id="getCatePie_group" parameterType="java.lang.String" resultType="com.autumn.pojo.Pie">
+    select cate.cate_name as name, truncate(sum(acc.money)/100,2) as value
+    from account as acc
+    left join conCategory as cate on acc.cateCode=cate.cate_code
+    left join users as u on acc.user_id=u.id
+    where time like '${time}%'
+    and acc.user_id in (select id from users where group_code=(select group_code from users where id = #{userId}))
+    group by cate_name
+  </select>
+
+  <!--根据月份获得当月所有日期-->
+  <select id="getAllDayByMonth_group" parameterType="java.lang.String" resultType="java.lang.String">
+    select distinct(acc.time)
+    from account acc
+    left join users as u on acc.user_id=u.id
+    where time like  '${time}%'
+    and acc.user_id in (select id from users where group_code=(select group_code from users where id = #{userId}))
+    order by acc.time asc
+  </select>
+
+  <!--以天为单位获取当月日消费金额-->
+  <select id="getDayMoneyByMonth_group" parameterType="java.lang.String" resultType="java.lang.String">
+    select TRUNCATE(sum(acc.money)/100,2)
+    from account acc
+    left join users as u on acc.user_id=u.id
+    where time like '${time}%'
+    and acc.user_id in (select id from users where group_code=(select group_code from users where id = #{userId}))
+    group by acc.time
+    order by acc.time asc
+  </select>
+
+  <!--根据年份所有月份-->
+  <select id="getAllMonth_Year_group" parameterType="java.lang.String" resultType="java.lang.String">
+    select DISTINCT(LEFT(acc.time,7)) as time
+    from account acc
+    left join users as u on acc.user_id=u.id
+    where acc.time like '${time}%'
+    <if test="cateCode != null and cateCode != ''" >
+      and acc.cateCode = #{cateCode}
+    </if>
+    and acc.user_id in (select id from users where group_code=(select group_code from users where id = #{userId}))
+    order by LEFT(time,7) asc
+  </select>
+
+  <!--根据年份获取所有月份金额-->
+  <select id="getAllMonthMoney_Year_group" parameterType="java.lang.String" resultType="java.lang.String">
+    select TRUNCATE(sum(acc.money)/100,2)
+    from account acc left join users as u on acc.user_id=u.id
+    where time like '${time}%'
+    <if test="cateCode != null and cateCode != ''" >
+      and acc.cateCode = #{cateCode}
+    </if>
+    and acc.user_id in (select id from users where group_code=(select group_code from users where id = #{userId}))
+    group by LEFT(acc.time,7) order by LEFT(acc.time,7) asc
+  </select>
+
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    id, cate_code, user_id, money, remark
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.autumn.pojo.AccountExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from account
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+
+
+  <delete id="deleteByExample" parameterType="com.autumn.pojo.AccountExample" >
+    delete from account
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+
+
+  <insert id="insertSelective" parameterType="com.autumn.pojo.Account" >
+    insert into account
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="cateCode != null" >
+        cate_code,
+      </if>
+      <if test="userId != null" >
+        user_id,
+      </if>
+      <if test="money != null" >
+        money,
+      </if>
+      <if test="remark != null" >
+        remark,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="cateCode != null" >
+        #{cateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        #{money,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        #{remark,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.autumn.pojo.AccountExample" resultType="java.lang.Integer" >
+    select count(*) from account
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+
+  <update id="updateByExampleSelective" parameterType="map" >
+    update account
+    <set >
+      <if test="record.id != null" >
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.cateCode != null" >
+        cate_code = #{record.cateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null" >
+        user_id = #{record.userId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.money != null" >
+        money = #{record.money,jdbcType=INTEGER},
+      </if>
+      <if test="record.remark != null" >
+        remark = #{record.remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+
+  <update id="updateByExample" parameterType="map" >
+    update account
+    set id = #{record.id,jdbcType=VARCHAR},
+      cate_code = #{record.cateCode,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=VARCHAR},
+      money = #{record.money,jdbcType=INTEGER},
+      remark = #{record.remark,jdbcType=VARCHAR}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.autumn.pojo.Account" >
+    update account
+    <set >
+      <if test="cateCode != null" >
+        cate_code = #{cateCode,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null" >
+        user_id = #{userId,jdbcType=VARCHAR},
+      </if>
+      <if test="money != null" >
+        money = #{money,jdbcType=INTEGER},
+      </if>
+      <if test="remark != null" >
+        remark = #{remark,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.autumn.pojo.Account" >
+    update account
+    set cate_code = #{cateCode,jdbcType=VARCHAR},
+      user_id = #{userId,jdbcType=VARCHAR},
+      money = #{money,jdbcType=INTEGER},
+      remark = #{remark,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+        PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+<plugins>
+    <plugin interceptor="com.autumn.interceptor.MyPageInterceptor">
+        <property name="limit" value="10"/>
+        <property name="dbType" value="mysql"/>
+    </plugin>
+</plugins>
+
+</configuration>

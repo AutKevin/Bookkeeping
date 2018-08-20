@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.autumn.mapper.SysModuleMapper" >
+  <resultMap id="BaseResultMap" type="com.autumn.pojo.SysModule" >
+    <id column="moduleCode" property="modulecode" jdbcType="VARCHAR" />
+    <result column="moduleName" property="modulename" jdbcType="VARCHAR" />
+    <result column="modulePath" property="modulepath" jdbcType="VARCHAR" />
+    <result column="parentCode" property="parentcode" jdbcType="VARCHAR" />
+    <result column="isLeaf" property="isleaf" jdbcType="INTEGER" />
+    <result column="sortNumber" property="sortnumber" jdbcType="INTEGER" />
+  </resultMap>
+
+  <!--获取所有菜单-->
+  <select id="getAllModules" resultType="com.autumn.pojo.SysModule">
+    select * from sys_module order by sortNumber
+  </select>
+
+  <!--根据rolecode获取绑定的菜单-->
+  <select id="getModulesByRoleCode" resultType="com.autumn.pojo.SysModule">
+    select sm.* from sys_module sm
+    left join sys_role_module srm on sm.moduleCode = srm.moduleCode
+    where srm.roleCode= #{roleCode}
+  </select>
+
+  <!--获取单条信息-->
+  <select id="getSingleData" resultType="com.autumn.pojo.SysModule" parameterType="java.lang.String" >
+    select c.*,p.moduleName as parentModuleName from sys_module as c
+    left join sys_module as p on c.parentCode=p.moduleCode
+    where c.moduleCode = #{modulecode,jdbcType=VARCHAR}
+  </select>
+
+  <!--删除多个菜单-->
+  <delete id="delModules" parameterType="java.lang.String" >
+    delete from sys_module
+    where moduleCode in (${ids})
+  </delete>
+
+  <sql id="Example_Where_Clause" >
+    <where >
+      <foreach collection="oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause" >
+    <where >
+      <foreach collection="example.oredCriteria" item="criteria" separator="or" >
+        <if test="criteria.valid" >
+          <trim prefix="(" suffix=")" prefixOverrides="and" >
+            <foreach collection="criteria.criteria" item="criterion" >
+              <choose >
+                <when test="criterion.noValue" >
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue" >
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue" >
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue" >
+                  and ${criterion.condition}
+                  <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List" >
+    moduleCode, moduleName, modulePath, parentCode, isLeaf, sortNumber
+  </sql>
+  <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.autumn.pojo.SysModuleExample" >
+    select
+    <if test="distinct" >
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from sys_module
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null" >
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.String" >
+    select 
+    <include refid="Base_Column_List" />
+    from sys_module
+    where moduleCode = #{modulecode,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from sys_module
+    where moduleCode = #{modulecode,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="com.autumn.pojo.SysModuleExample" >
+    delete from sys_module
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="com.autumn.pojo.SysModule" >
+    insert into sys_module (moduleCode, moduleName, modulePath, 
+      parentCode, isLeaf, sortNumber
+      )
+    values (#{modulecode,jdbcType=VARCHAR}, #{modulename,jdbcType=VARCHAR}, #{modulepath,jdbcType=VARCHAR}, 
+      #{parentcode,jdbcType=VARCHAR}, #{isleaf,jdbcType=INTEGER}, #{sortnumber,jdbcType=INTEGER}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="com.autumn.pojo.SysModule" >
+    insert into sys_module
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="moduleCode != null" >
+        moduleCode,
+      </if>
+      <if test="moduleName != null" >
+        moduleName,
+      </if>
+      <if test="modulePath != null" >
+        modulePath,
+      </if>
+      <if test="parentCode != null" >
+        parentCode,
+      </if>
+      <if test="isLeaf != null" >
+        isLeaf,
+      </if>
+      <if test="sortNumber != null" >
+        sortNumber,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="moduleCode != null" >
+        #{moduleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="moduleName != null" >
+        #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="modulePath != null" >
+        #{modulePath,jdbcType=VARCHAR},
+      </if>
+      <if test="parentCode != null" >
+        #{parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isLeaf != null" >
+        #{isLeaf,jdbcType=INTEGER},
+      </if>
+      <if test="sortNumber != null" >
+        #{sortNumber,jdbcType=INTEGER},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="com.autumn.pojo.SysModuleExample" resultType="java.lang.Integer" >
+    select count(*) from sys_module
+    <if test="_parameter != null" >
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map" >
+    update sys_module
+    <set >
+      <if test="record.moduleCode != null" >
+        moduleCode = #{record.moduleCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modulename != null" >
+        moduleName = #{record.modulename,jdbcType=VARCHAR},
+      </if>
+      <if test="record.modulePath != null" >
+        modulePath = #{record.modulePath,jdbcType=VARCHAR},
+      </if>
+      <if test="record.parentCode != null" >
+        parentCode = #{record.parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="record.isleaf != null" >
+        isLeaf = #{record.isleaf,jdbcType=INTEGER},
+      </if>
+      <if test="record.sortnumber != null" >
+        sortNumber = #{record.sortnumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map" >
+    update sys_module
+    set moduleCode = #{record.modulecode,jdbcType=VARCHAR},
+      moduleName = #{record.modulename,jdbcType=VARCHAR},
+      modulePath = #{record.modulepath,jdbcType=VARCHAR},
+      parentCode = #{record.parentcode,jdbcType=VARCHAR},
+      isLeaf = #{record.isleaf,jdbcType=INTEGER},
+      sortNumber = #{record.sortnumber,jdbcType=INTEGER}
+    <if test="_parameter != null" >
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="com.autumn.pojo.SysModule" >
+    update sys_module
+    <set >
+      <if test="moduleName != null" >
+        moduleName = #{moduleName,jdbcType=VARCHAR},
+      </if>
+      <if test="modulePath != null" >
+        modulePath = #{modulePath,jdbcType=VARCHAR},
+      </if>
+      <if test="parentCode != null" >
+        parentCode = #{parentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="isLeaf != null" >
+        isLeaf = #{isLeaf,jdbcType=INTEGER},
+      </if>
+      <if test="sortNumber != null" >
+        sortNumber = #{sortNumber,jdbcType=INTEGER},
+      </if>
+    </set>
+    where moduleCode = #{moduleCode,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.autumn.pojo.SysModule" >
+    update sys_module
+    set moduleName = #{modulename,jdbcType=VARCHAR},
+      modulePath = #{modulepath,jdbcType=VARCHAR},
+      parentCode = #{parentcode,jdbcType=VARCHAR},
+      isLeaf = #{isleaf,jdbcType=INTEGER},
+      sortNumber = #{sortnumber,jdbcType=INTEGER}
+    where moduleCode = #{modulecode,jdbcType=VARCHAR}
+  </update>
+</mapper>
