@@ -38,7 +38,7 @@ public class GetHttpInfoController {
     @Autowired
     RedisTool redisTool;
 
-/*    @Autowired
+    /*@Autowired
     @Qualifier("getHttpInfoServicefromdubbo")
     public GetHttpInfoServiceInf getHttpInfoService;*/
     @Autowired
@@ -99,7 +99,7 @@ public class GetHttpInfoController {
         Account account = new Account();
         account.setUserId(user.getId());
         account.setCateCode("weizhi");   //类型未知
-        account.setTime(DateTool.getToday());   //默认今天
+        account.setTime(DateTool.getNowTime());   //默认今天
         account.setMoney((int) (money*100));
         int result = bookService.addBook(account);
         return result==1?true:false;

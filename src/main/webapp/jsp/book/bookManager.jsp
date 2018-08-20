@@ -149,7 +149,7 @@
 										<input type="text" value="" class="form-control" name="remark" id="remark_add" tabindex="13" />
 									</div>
 								</div>
-								<div class="form-group">
+								<%--<div class="form-group">
 									<label class="col-sm-3 control-label">
 										消费时间：
 									</label>
@@ -158,7 +158,7 @@
 											<input type="text" value="" class="form-control" name="time" id="time_add" tabindex="14" />
 										</span>
 									</div>
-								</div>
+								</div>--%>
 								<div class="form-group">
 									<div class="controls">
 										<button type="submit" class="btn btn-gmtx-define1 center-block" tabindex="15">
@@ -257,6 +257,7 @@
     	<script type="text/javascript" src="/${appName}/commons/jslib/hplus/js/content.min.js"></script>
 		<script type="text/javascript" src="/${appName}/commons/jslib/hplus/js/plugins/datapicker/bootstrap-datepicker.js"></script>
 		<script type="text/javascript" src="/${appName}/commons/jslib/CommonValue.js"></script>
+		<script src="js/plugins/layer/laydate/laydate.js"></script>
 		<script type="text/javascript">
 		//判断为空
 		function isNull(variable1){
@@ -312,6 +313,7 @@
 				}
 		});
 	}
+	//将datepicker初始化为年月日
 	function dateInit(dom){
         $('#'+dom).datepicker({
             autoclose: true, //自动关闭
@@ -394,12 +396,12 @@
             clear: "清除"
         };
 
-        dateInit('time_add');
-        dateInit('time_up');
+        //dateInit('time_add');
+        //dateInit('time_up');
         dateInit('time_search_start');
         dateInit('time_search_end');
 
-        $('#time_add').datepicker('setDate',getNowFormatDate());
+        //$('#time_add').datetimepicker('setDate',getNowFormatDate());
 
         $("#cateCode_add").bsSuggest('init', {
             clearable: true,
@@ -449,8 +451,8 @@
 	    dataType: "json",
 	    pagination: true, //分页
         sidePagination: "server", //服务端处理分页
-        pageList: [5, 10, 25],
-	    pageSize: 5,
+        pageList: [5, 10, 25 ,50],
+	    pageSize: 10,
 	    pageNumber:1,
 	    //toolbar:"#tb",
 	    singleSelect: false,
@@ -499,13 +501,16 @@
                 {
                     title: '消费时间',
                     field: 'time',
-                    valign: 'middle'
+                    valign: 'middle',
+                    formatter:function(value,row,index){
+                        return value.substr(0,value.length-2);
+                    }
                 },
                 {
                     title: '操作',
                     field: '',
                     formatter:function(value,row,index){
-                        var u = '<a href="#" class="btn btn-gmtx-define1" onclick="editBook(\''+ row.id +'\')">修改</a> ';
+                        var u = '<a href="#" class="btn btn-gmtx-define1" onclick="editBook(\''+ row.id +'\',\''+row.time+'\')">修改</a> ';
                         var d = '<a href="#" class="btn btn-gmtx-define1" onclick="delBook(\''+ row.id +'\')">删除</a> ';
                         return u+d;
                   	 }
@@ -518,7 +523,7 @@
       	var cateCode = cate_code_add;
       	var money = $("#money_add").val()*10000/100;   /*金额*/
         var remark = $("#remark_add").val();
-      	var time = $("#time_add").val();
+      	//var time = $("#time_add").val();
       	if(isNull(cateCode)){
             swal({
                 title: "提示",
@@ -534,7 +539,7 @@
 			type:'post',
 			async:'true',
 			cache:false,
-			data:{cateCode:cateCode,money:parseInt(money.toFixed(2)),remark:remark,time:time},
+			data:{cateCode:cateCode,money:parseInt(money.toFixed(2)),remark:remark},
 			dataType:'json',
 			success: function(data){
 					  if(data){
@@ -601,7 +606,7 @@
                 type:'post',
                 async:'true',
                 cache:false,
-                data:{id:id,cateCode:cateCode,money:parseInt(money.toFixed(2)),remark:remark,time:time},
+                data:{id:id,cateCode:cateCode,money:parseInt(money.toFixed(2)),remark:remark,time:time+edit_hhmmss},
                 dataType:'json',
                 success: function(data){
                     if(data){
@@ -701,7 +706,8 @@
 		}
 
 		/*打开修改弹框*/
-		function editBook(id){
+		function editBook(id,time){
+		    edit_hhmmss = time.substr(10,19);  //获取时分秒
             $("#upwin").modal('show');
             $("#id_up").val(id);
             $.ajax({
@@ -716,7 +722,7 @@
                         $("#cateCode_up").val(data.cate_name);
                         $("#money_up").val(data.money/100);
                         $("#remark_up").val(data.remark);
-                        $('#time_up').datepicker('setDate',data.time);
+                        $('#time_up').datepicker('setDate',data.time.substr(0,10));
                     }else{
                         swal({
                             title: "系统提示",

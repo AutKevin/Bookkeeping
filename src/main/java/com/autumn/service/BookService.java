@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -46,6 +48,11 @@ public class BookService {
     public int addBook(Account account) {
         String id = UUID.randomUUID().toString();
         account.setId(id);
+        if (account!=null&&(account.getTime()==null||account.getTime().trim().isEmpty())){
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String time = simpleDateFormat.format(new Date());
+            account.setTime(time);
+        }
         return accountMapper.insert(account);
     }
 
@@ -55,6 +62,9 @@ public class BookService {
      * @return
      */
     public int editBook(Account account) {
+        if (account.getTime().length()<=10) {
+            account.setTime(account.getTime() + " 01:11:11");
+        }
         return accountMapper.editBook(account);
     }
 
@@ -87,5 +97,11 @@ public class BookService {
      */
     public int getPreCountMoney(String userid){
         return accountMapper.getPreCountMoney(userid);
+    }
+
+    public static void main(String[] args) {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String time = simpleDateFormat.format(new Date());
+        System.out.println(time);
     }
 }

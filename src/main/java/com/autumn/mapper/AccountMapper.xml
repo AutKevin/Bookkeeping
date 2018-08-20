@@ -93,7 +93,7 @@
         cateCode = #{cateCode,jdbcType=VARCHAR},
       </if>
       <if test="userId != null and userId != ''" >
-        user_id in (select id from users where group_code =(select group_code from users where id= #{userId})),
+        user_id = #{userId},
       </if>
       <if test="money != null and money != ''" >
         money = #{money,jdbcType=INTEGER},
