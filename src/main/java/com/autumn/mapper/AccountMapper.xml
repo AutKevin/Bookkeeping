@@ -22,7 +22,7 @@
     left join conCategory as cate on cate.cate_code = acc.cateCode
     <where>
       <if test="userId!=null and userId!=''">
-        acc.user_id = #{userId}
+        acc.user_id in (select id from users where group_code =(select group_code from users where id= #{userId}))
       </if>
       <if test="cateCode_search!=null and cateCode_search!=''">
        and acc.cateCode = #{cateCode_search}
@@ -45,16 +45,16 @@
     </where>
     order by acc.time desc
   </select>
-
+<!--分页显示所有数据-->
   <select id="getAllBookByPage" resultType="com.autumn.pojo.AccountExt" >
     select
-    <include refid="getAllBooksql" />
+    acc.id, acc.cateCode, cate_name, user_id,u.name as user_name, money, remark, time
     from account as acc
     left join users as u on u.id = acc.user_id
     left join conCategory as cate on cate.cate_code = acc.cateCode
     <where>
       <if test="userId!=null and userId!=''">
-        acc.user_id = #{userId}
+        acc.user_id in (select id from users where group_code =(select group_code from users where id= #{userId}))
       </if>
       <if test="cateCode_search!=null and cateCode_search!=''">
         and acc.cateCode = #{cateCode_search}
@@ -93,7 +93,7 @@
         cateCode = #{cateCode,jdbcType=VARCHAR},
       </if>
       <if test="userId != null and userId != ''" >
-        user_id = #{userId,jdbcType=VARCHAR},
+        user_id in (select id from users where group_code =(select group_code from users where id= #{userId})),
       </if>
       <if test="money != null and money != ''" >
         money = #{money,jdbcType=INTEGER},
@@ -125,18 +125,18 @@
 
   <!--获取当月总金额-->
   <select id="getCountMoney" parameterType="java.lang.String" resultType="java.lang.Integer">
-    select IFNULL(sum(money),0) from account where user_id = #{user_id} and DATE_FORMAT( time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
+    select IFNULL(sum(money),0) from account where user_id in (select id from users where group_code =(select group_code from users where id= #{user_id})) and DATE_FORMAT( time, '%Y%m' ) = DATE_FORMAT( CURDATE( ) , '%Y%m' )
   </select>
 
   <!--获取上月总金额-->
   <select id="getPreCountMoney" parameterType="java.lang.String" resultType="java.lang.Integer">
-    select IFNULL(sum(money),0) from account where user_id = #{user_id} and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format( time, '%Y%m' ) ) =1
+    select IFNULL(sum(money),0) from account where user_id in (select id from users where group_code =(select group_code from users where id= #{user_id})) and PERIOD_DIFF( date_format( now( ) , '%Y%m' ) , date_format( time, '%Y%m' ) ) =1
   </select>
-
+  <!--************************************************个人报表用************************************************ -->
   <!--获取已经使用的种类,报表用-->
   <select id="getUsedCate" parameterType="java.lang.String" resultType="java.lang.String">
      select distinct(cate.cate_name) from account as acc left join conCategory as cate on acc.cateCode=cate.cate_code
-     where time like '${time}%' and acc.user_id= #{userId}
+     where time like '${time}%' and acc.user_id = #{userId}
   </select>
 
   <!--消费类型饼状图-->

@@ -241,11 +241,11 @@
        <version>${freemarker.version}</version>
      </dependency>
      <!--httpclient-->
-    <dependency>
+<!--    <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpcomponents-client</artifactId>
-      <version>4.5.5</version>
-    </dependency>
+      <version>4.5.3</version>
+    </dependency>-->
     
   </dependencies>
 

@@ -491,6 +491,11 @@
                     field: 'remark',
                     valign: 'middle'
                 },
+				{
+					title: '记录来源',
+					field: 'user_name',
+					valign: 'middle'
+				},
                 {
                     title: '消费时间',
                     field: 'time',

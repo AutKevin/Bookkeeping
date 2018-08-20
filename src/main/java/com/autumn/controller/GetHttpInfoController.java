@@ -34,11 +34,11 @@ public class GetHttpInfoController {
     @Autowired
     RedisTool redisTool;
 
-    @Autowired
+/*    @Autowired
     @Qualifier("getHttpInfoServicefromdubbo")
-    public GetHttpInfoServiceInf getHttpInfoService;
-    /*@Autowired
-    public GetHttpInfoService_NoDubbo getHttpInfoService;*/
+    public GetHttpInfoServiceInf getHttpInfoService;*/
+    @Autowired
+    public GetHttpInfoService_NoDubbo getHttpInfoService;
 
     @RequestMapping("/getAndroid")
     @ResponseBody
