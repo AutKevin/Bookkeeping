@@ -92,9 +92,9 @@
       <if test="cateCode != null and cateCode != ''" >
         cateCode = #{cateCode,jdbcType=VARCHAR},
       </if>
-      <if test="userId != null and userId != ''" >
+      <!--<if test="userId != null and userId != ''" >
         user_id = #{userId},
-      </if>
+      </if>-->
       <if test="money != null and money != ''" >
         money = #{money,jdbcType=INTEGER},
       </if>
