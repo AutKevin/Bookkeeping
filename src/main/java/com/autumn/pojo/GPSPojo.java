@@ -33,23 +33,12 @@ public class GPSPojo implements Serializable{
     @Override
     public String toString() {
         return "GPSPojo{" +
-                "time='" + time + '\'' +
-                ", locType='" + locType + '\'' +
+                "userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", time='" + time + '\'' +
                 ", latitude='" + latitude + '\'' +
                 ", lontitude='" + lontitude + '\'' +
-                ", radius='" + radius + '\'' +
-                ", CountryCode='" + CountryCode + '\'' +
-                ", Country='" + Country + '\'' +
-                ", citycode='" + citycode + '\'' +
-                ", city='" + city + '\'' +
-                ", District='" + District + '\'' +
-                ", Street='" + Street + '\'' +
                 ", addr='" + addr + '\'' +
-                ", UserIndoorState='" + UserIndoorState + '\'' +
-                ", Direction='" + Direction + '\'' +
-                ", locationdescribe='" + locationdescribe + '\'' +
-                ", Poi='" + Poi + '\'' +
-                ", operationers='" + operationers + '\'' +
                 ", describe='" + describe + '\'' +
                 '}';
     }
