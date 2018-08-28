@@ -34,6 +34,7 @@ public class GetHttpInfoService_NoDubbo {
         position.setTime(gpsPojo.getTime());
         position.setAddr(gpsPojo.getAddr());
         position.setLocationdescribe(gpsPojo.getLocationdescribe());
+        position.setNetworkLocationType(gpsPojo.getNetworkLocationType());
         return getHttpInfoMapper.insertGPS(position);
     }
 
