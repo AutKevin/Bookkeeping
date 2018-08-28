@@ -4,8 +4,8 @@
 
     <!--添加-->
     <insert id="insertGPS" parameterType="com.autumn.pojo.UserPosition" >
-        insert into user_position (id,userId,userFlag,lontitude,latitude,time,addr,locationdescribe)
-        values (#{id}, #{userId}, #{userFlag}, #{lontitude}, #{latitude}, #{time},#{addr},#{locationdescribe});
+        insert into user_position (id,userId,userFlag,lontitude,latitude,time,addr,locationdescribe,networkLocationType)
+        values (#{id}, #{userId}, #{userFlag}, #{lontitude}, #{latitude}, #{time},#{addr},#{locationdescribe},#{networkLocationType});
     </insert>
 
     <!--获取最新位置-->

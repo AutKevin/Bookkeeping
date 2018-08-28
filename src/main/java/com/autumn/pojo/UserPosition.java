@@ -12,6 +12,15 @@ public class UserPosition {
     private String time;
     private String addr;   //地址
     private String locationdescribe;   //位置描述
+    private String networkLocationType;  //网络定位方式
+
+    public String getNetworkLocationType() {
+        return networkLocationType;
+    }
+
+    public void setNetworkLocationType(String networkLocationType) {
+        this.networkLocationType = networkLocationType;
+    }
 
     public String getAddr() {
         return addr;

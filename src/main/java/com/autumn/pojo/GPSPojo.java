@@ -30,6 +30,8 @@ public class GPSPojo implements Serializable{
     private String operationers;
     private String describe;
 
+    private String networkLocationType;  //网络定位方式
+
     @Override
     public String toString() {
         return "GPSPojo{" +
@@ -39,8 +41,17 @@ public class GPSPojo implements Serializable{
                 ", latitude='" + latitude + '\'' +
                 ", lontitude='" + lontitude + '\'' +
                 ", addr='" + addr + '\'' +
-                ", describe='" + describe + '\'' +
+                ", locationdescribe='" + locationdescribe + '\'' +
+                ", networkLocationType='" + networkLocationType + '\'' +
                 '}';
+    }
+
+    public String getNetworkLocationType() {
+        return networkLocationType;
+    }
+
+    public void setNetworkLocationType(String networkLocationType) {
+        this.networkLocationType = networkLocationType;
     }
 
     public String getUserId() {

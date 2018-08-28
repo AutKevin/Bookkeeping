@@ -55,6 +55,9 @@
                 data: {time:time},
                 dataType: 'json',
                 success: function (monthdata) {
+                    for (var i=0;i<monthdata.length;i++){
+                        monthdata[i] = monthdata[i].substr(0,10);
+                    }
                     if (!isNull(monthdata)) {
                         /*获取数据*/
                         $.ajax({
@@ -90,6 +93,7 @@
                                                 boundaryGap : false,
                                                 data : monthdata,
                                                 nameRotate: -90,
+
                                             }
                                         ],
                                         yAxis : [

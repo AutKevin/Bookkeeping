@@ -44,7 +44,8 @@
 
                     var content = '<div style="margin:0;line-height:20px;padding:2px;">' +
                         '地址:'+(json.addr==null?"无":json.addr)+ '<br/>描述：'+(json.locationdescribe==null?"无":json.locationdescribe)+'。'
-                        + '<br/>更新时间：'+(json.time==null?"无":json.time.substring(0, json.time.length - 2))+'</div>';
+                        + '<br/>更新时间：'+(json.time==null?"无":json.time.substring(0, json.time.length - 2))
+                        + '<br/>定位方式：'+ getNetLocaType(json.networkLocationType) +'</div>';
                     var marker = new BMap.Marker(point); //创建marker对象
                     //marker.enableDragging(false); //marker可拖拽
                     openInfo(map,marker,flag,content);
@@ -77,9 +78,24 @@
         });
     }
 
+    function getNetLocaType(networkLocationType){
+        switch(networkLocationType){
+            case 'wf':
+                return "wifi";
+                break;
+            case 'cl':
+                return  "手机";
+                break;
+            case 'll':
+                return  "GPS";
+                break;
+            default:
+                return  "无";
+        }
+    }
     $(function(){
         getGps();
-        window.setInterval("getGps()",10000);
+        window.setInterval("getGps()",1000*59);
     });
 </script>
 </html>
