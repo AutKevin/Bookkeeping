@@ -65,7 +65,7 @@ public class GetHttpInfoController {
         }else if(msgPojo.getAppName().equals(AppEnum.WX.getAppFullPack())){
             String wxPath = rootPath+msgPojo.getUserName()+"_"+AppEnum.WX.getAppCode()+".log";
             FileTool.writeToFile(wxPath,data);
-        }else if(msgPojo.getAppName().equals(AppEnum.ZFB.getAppFullPack())){
+        }else if(msgPojo.getAppName().equals(AppEnum.ZFB.getAppFullPack())||msgPojo.getTitle().equals("交易提醒")){
             String zfbPath = rootPath+msgPojo.getUserName()+"_"+AppEnum.ZFB.getAppCode()+".log";
             FileTool.writeToFile(zfbPath,data);
             //判断是否为消费消息
@@ -75,7 +75,9 @@ public class GetHttpInfoController {
                 Matcher ma=pattern.matcher(msgPojo.getContext());
                 while(ma.find()){
                     boolean result = addBook(Double.parseDouble(ma.group()),msgPojo.getUserName());
-                    FileTool.writeToFile(zfbPath,"消费一笔"+ma.group()+"金额,记账"+result+"");
+                    if(msgPojo.getAppName().equals(AppEnum.ZFB.getAppFullPack())){
+                        FileTool.writeToFile(zfbPath,"消费一笔"+ma.group()+"金额,记账"+result+"");
+                    }
                 }
             }
         }else{
